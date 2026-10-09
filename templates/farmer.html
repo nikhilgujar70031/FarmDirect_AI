@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Farmer Dashboard</h2>
+</div>
+
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <h4>Total Produce Listed</h4>
+        <div class="stat-value">{{ total_produce }}</div>
+    </div>
+    <div class="stat-card">
+        <h4>Available Quantity (kg)</h4>
+        <div class="stat-value">{{ available_qty }}</div>
+    </div>
+    <div class="stat-card">
+        <h4>Active Orders</h4>
+        <div class="stat-value">{{ active_orders }}</div>
+    </div>
+</div>
+
+<section class="farm-insights" aria-labelledby="farm-insights-title">
+    <div class="insights-heading">
+        <div>
+            <h3 id="farm-insights-title">Farm Insights</h3>
+            <p>Rule-based demo estimates from saved requirements and listings, with sample values where data is missing.</p>
+        </div>
+        <p class="insights-disclaimer"><strong>Indicative demo estimate:</strong> not a live market price or guaranteed selling price.</p>
+    </div>
+    <div class="insights-grid">
+        {% for crop in supported_crops %}
+            {% set forecast = demand_forecasts[crop] %}
+            {% set price = price_estimates[crop] %}
+            <article class="insight-card">
+                <div class="insight-card-heading">
+                    <h4>{{ crop }}</h4>
+                    <span class="forecast-level forecast-{{ forecast.level|lower }}">{{ forecast.level }} demand</span>
+                </div>
+                <p class="insight-quantity">{{ forecast.estimated_kg }} <span>kg estimated demand</span></p>
+                <p class="insight-explanation">{{ forecast.explanation }}</p>
+                <div class="insight-price">
+                    <span>Indicative demo estimate</span>
+                    <strong>₹{{ '%.2f'|format(price.price_per_kg) }} / kg</strong>
+                </div>
+                <p class="insight-source">{{ price.source }}</p>
+            </article>
+        {% endfor %}
+    </div>
+    <p class="insights-note">Forecasts and prices are demo suggestions only, not financial advice. Make your own selling and storage decisions.</p>
+</section>
+
+<div class="dashboard-grid">
+    <div class="card">
+        <h3>Add Produce</h3>
+        <form action="{{ url_for('farmer') }}" method="POST">
+            <div class="form-group">
+                <label>Farmer Name</label>
+                <input type="text" name="farmer_name" required>
+            </div>
+            <div class="form-group">
+                <label>Produce Type</label>
+                <select name="produce_type" required>
+                    <option value="Wheat">Wheat</option>
+                    <option value="Rice">Rice</option>
+                    <option value="Chana">Chana</option>
+                    <option value="Tur Dal">Tur Dal</option>
+                    <option value="Moong">Moong</option>
+                    <option value="Soybean">Soybean</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Quantity (kg)</label>
+                <input type="number" name="quantity" required min="1">
+            </div>
+            <div class="form-group">
+                <label>Quality</label>
+                <select name="quality" required>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Standard">Standard</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" name="location" required>
+            </div>
+            <div class="form-group">
+                <label>Indicative Price per kg (₹)</label>
+                <input type="number" step="0.01" name="price" placeholder="e.g. 25.50">
+                <small class="help-text">* Provided by farmer or demo data</small>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">List Produce</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Your Saved Listings</h3>
+        {% if produces %}
+            <div class="list-group">
+                {% for p in produces %}
+                    <div class="list-item">
+                        <div class="item-header">
+                            <strong>{{ p.produce_type }}</strong>
+                            <span class="badge">{{ p.quality }}</span>
+                        </div>
+                        <div class="item-details">
+                            <p>Available: <strong>{{ p.quantity }} kg</strong></p>
+                            <p>📍 {{ p.location }} | 🧑‍🌾 {{ p.farmer_name }}</p>
+                            {% if p.price %}
+                                <p class="price-tag">₹{{ p.price }} / kg</p>
+                            {% endif %}
+                            {% if recommendations.get(p.id) %}
+                                <div class="listing-recommendation">
+                                    <span class="recommendation-label recommendation-{{ recommendations[p.id].action|lower }}">{{ recommendations[p.id].action }} suggestion</span>
+                                    <p>{{ recommendations[p.id].reason }}</p>
+                                    <small>Demo suggestion only. Please make your own decision.</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-state">No produce listed yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2 class="text-blue">Buyer Dashboard</h2>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card">
+        <h3>Post Requirement</h3>
+        <form action="{{ url_for('buyer') }}" method="POST">
+            <div class="form-group">
+                <label>Buyer Name</label>
+                <input type="text" name="buyer_name" required>
+            </div>
+            <div class="form-group">
+                <label>Required Produce</label>
+                <select name="produce_type" required>
+                    <option value="Wheat">Wheat</option>
+                    <option value="Rice">Rice</option>
+                    <option value="Chana">Chana</option>
+                    <option value="Tur Dal">Tur Dal</option>
+                    <option value="Moong">Moong</option>
+                    <option value="Soybean">Soybean</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Required Quantity (kg)</label>
+                <input type="number" name="quantity" required min="1">
+            </div>
+            <div class="form-group">
+                <label>Preferred Quality</label>
+                <select name="quality" required>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Standard">Standard</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Your Location</label>
+                <input type="text" name="location" required>
+            </div>
+            <button type="submit" class="btn btn-secondary w-100">Post Requirement</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Your Requirements</h3>
+        {% if requirements %}
+            <div class="list-group">
+                {% for r in requirements %}
+                    <div class="list-item border-blue">
+                        <div class="item-header">
+                            <strong>{{ r.produce_type }}</strong>
+                            <span class="badge badge-blue">Needs {{ r.quantity }} kg</span>
+                        </div>
+                        <div class="item-details">
+                            <p>Quality: {{ r.quality }}</p>
+                            <p>📍 {{ r.location }} | 🏢 {{ r.buyer_name }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-state">No requirements posted yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% if matches %}
+<div class="card mt-3">
+    <h3 class="text-warning">Rule-Based Buyer Matches</h3>
+    <p class="help-text">Match scores compare produce type, quantity coverage, quality, and location. This is a transparent rules feature, not AI.</p>
+    
+    <div class="matches-grid">
+        {% for match in matches %}
+            <div class="match-card">
+                <div class="match-badge match-badge-{{ match.label|lower }}">{{ match.label }} · {{ match.score }}%</div>
+                <h4>{{ match.produce.produce_type }}</h4>
+                <p><strong>Farmer:</strong> {{ match.produce.farmer_name }} ({{ match.produce.location }})</p>
+                <p><strong>Buyer:</strong> {{ match.requirement.buyer_name }} ({{ match.requirement.location }})</p>
+                <p><strong>Available:</strong> {{ match.produce.quantity }} kg</p>
+                <p><strong>Required:</strong> {{ match.requirement.quantity }} kg</p>
+                <ul class="match-reasons">
+                    {% for reason in match.reasons %}
+                        <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+                
+                <form action="{{ url_for('marketplace') }}" method="POST" class="mt-2">
+                    <input type="hidden" name="produce_id" value="{{ match.produce.id }}">
+                    <input type="hidden" name="buyer_name" value="{{ match.requirement.buyer_name }}">
+                    <input type="hidden" name="buyer_location" value="{{ match.requirement.location }}">
+                    <input type="hidden" name="order_quantity" value="{{ match.order_quantity }}">
+                    <button type="submit" class="btn btn-primary w-100">Create Order for {{ match.order_quantity }} kg</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Marketplace</h2>
+    <p>Browse available produce directly from farmers.</p>
+</div>
+
+<div class="marketplace-grid">
+    {% if produces %}
+        {% for p in produces %}
+            <div class="card produce-card">
+                <div class="produce-header">
+                    <h3>{{ p.produce_type }}</h3>
+                    <span class="badge">{{ p.quality }}</span>
+                </div>
+                <div class="produce-details">
+                    <p><strong>Available:</strong> {{ p.quantity }} kg</p>
+                    <p><strong>Location:</strong> {{ p.location }}</p>
+                    <p><strong>Farmer:</strong> {{ p.farmer_name }}</p>
+                    {% if p.price %}
+                        <p class="price-tag">₹{{ p.price }} / kg</p>
+                    {% endif %}
+                </div>
+                
+                <hr>
+                
+                <form action="{{ url_for('marketplace') }}" method="POST" class="order-form">
+                    <input type="hidden" name="produce_id" value="{{ p.id }}">
+                    <div class="form-group small">
+                        <label>Your Buyer Name</label>
+                        <input type="text" name="buyer_name" required placeholder="e.g. ABC Foods">
+                    </div>
+                    <div class="form-group small">
+                        <label>Buyer Location</label>
+                        <input type="text" name="buyer_location" required placeholder="e.g. Mumbai">
+                    </div>
+                    <div class="form-group small">
+                        <label>Quantity to Order (kg)</label>
+                        <input type="number" name="order_quantity" required min="1" max="{{ p.quantity }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mt-1">Place Order</button>
+                </form>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="empty-state w-100 text-center">No produce currently available in the marketplace.</p>
+    {% endif %}
+</div>
+{% endblock %}

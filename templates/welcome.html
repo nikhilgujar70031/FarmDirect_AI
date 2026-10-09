@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to FarmDirect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+        .welcome-page {
+            --welcome-ink: #243b2d;
+            --welcome-leaf: #47734b;
+            --welcome-moss: #76915c;
+            --welcome-clay: #bd704b;
+            --welcome-paper: #f7f3e8;
+            min-height: 100vh;
+            min-height: 100svh;
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgb(255 255 255 / 0.76), transparent 48%),
+                linear-gradient(180deg, #eee9d8 0%, var(--welcome-paper) 56%, #f4eddd 100%);
+            padding: clamp(2.75rem, 7vh, 5.5rem) clamp(1.1rem, 4vw, 3.5rem) 2rem;
+            text-align: center;
+        }
+        .welcome-page::before,
+        .welcome-page::after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .welcome-page::before {
+            width: clamp(9rem, 19vw, 17rem);
+            aspect-ratio: 1;
+            top: clamp(2rem, 8vh, 5rem);
+            right: clamp(-3rem, 7vw, 7rem);
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 38%, #f2c77c 0 42%, #eab968 43% 58%, transparent 59%);
+            opacity: 0.72;
+        }
+        .welcome-page::after {
+            inset: auto -8% -3.5rem;
+            height: clamp(8rem, 20vh, 13rem);
+            background:
+                repeating-linear-gradient(168deg, transparent 0 17px, rgb(70 102 60 / 0.12) 18px 20px, transparent 21px 36px),
+                linear-gradient(174deg, transparent 0 21%, #d9dfc2 21.5% 48%, #c8d2ad 48.5% 100%);
+            clip-path: polygon(0 28%, 19% 8%, 43% 25%, 67% 0, 100% 23%, 100% 100%, 0 100%);
+        }
+        .welcome-hero,
+        .welcome-features,
+        .down-arrow-container {
+            position: relative;
+            z-index: 1;
+        }
+        .welcome-hero {
+            width: min(100%, 900px);
+            margin-bottom: clamp(2.4rem, 6vh, 4.25rem);
+        }
+        .welcome-heading {
+            max-width: 850px;
+            margin: 0 auto;
+            color: var(--welcome-ink);
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(2.65rem, 6vw, 5.25rem);
+            font-weight: 700;
+            line-height: 1.08;
+            text-wrap: balance;
+        }
+        .welcome-features {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: clamp(1rem, 2.2vw, 1.75rem);
+            max-width: 1080px;
+            width: 100%;
+        }
+        .welcome-feature-card {
+            min-height: 250px;
+            padding: clamp(1.7rem, 3vw, 2.4rem) clamp(1.25rem, 2.2vw, 2rem);
+            border: 1px solid rgb(66 91 57 / 0.14);
+            border-top: 4px solid var(--welcome-leaf);
+            border-radius: 8px;
+            background: rgb(255 254 249 / 0.88);
+            box-shadow: 0 14px 32px rgb(57 63 39 / 0.08), 0 2px 5px rgb(57 63 39 / 0.04);
+            text-align: center;
+            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+        }
+        .welcome-feature-card:hover {
+            transform: translateY(-6px);
+            border-color: rgb(66 91 57 / 0.28);
+            box-shadow: 0 20px 38px rgb(57 63 39 / 0.12), 0 3px 8px rgb(57 63 39 / 0.05);
+        }
+        .welcome-feature-card h3 {
+            color: var(--welcome-ink);
+            margin: 0 0 0.75rem;
+            font-size: 1.2rem;
+            line-height: 1.3;
+        }
+        .welcome-feature-card p {
+            max-width: 30ch;
+            margin: 0 auto;
+            color: #657263;
+            font-size: 0.96rem;
+            line-height: 1.7;
+        }
+        .feature-icon {
+            display: grid;
+            place-items: center;
+            width: 4.4rem;
+            aspect-ratio: 1;
+            margin: 0 auto 1.15rem;
+            border-radius: 50%;
+            background: #edf1e2;
+            font-size: 2.5rem;
+        }
+        .down-arrow-container {
+            margin-top: clamp(2rem, 4vh, 3rem);
+        }
+        .down-arrow {
+            display: grid;
+            place-items: center;
+            width: 3.65rem;
+            aspect-ratio: 1;
+            border: 1px solid rgb(71 115 75 / 0.3);
+            border-radius: 50%;
+            background: #fffdf7;
+            box-shadow: 0 8px 20px rgb(57 63 39 / 0.1);
+            color: var(--welcome-leaf);
+            font-size: 1.8rem;
+            text-decoration: none;
+            line-height: 1;
+            transition: transform 220ms ease, background-color 220ms ease, box-shadow 220ms ease;
+        }
+        .down-arrow:hover {
+            transform: translateY(5px);
+            background: #f0f3e7;
+            box-shadow: 0 11px 24px rgb(57 63 39 / 0.14);
+        }
+        .down-arrow:focus-visible {
+            outline: 3px solid var(--welcome-clay);
+            outline-offset: 4px;
+        }
+        @media (max-width: 760px) {
+            .welcome-page {
+                justify-content: flex-start;
+                padding-top: clamp(4rem, 11vh, 6rem);
+            }
+            .welcome-page::before {
+                top: 1rem;
+                right: -3.5rem;
+                opacity: 0.48;
+            }
+            .welcome-features {
+                max-width: 520px;
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .welcome-feature-card {
+                min-height: 0;
+                padding: 1.5rem 1.35rem;
+            }
+            .feature-icon {
+                width: 3.8rem;
+                font-size: 2.1rem;
+                margin-bottom: 0.85rem;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .welcome-feature-card,
+            .down-arrow {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-page">
+        <header class="welcome-hero">
+            <h1 class="welcome-heading">Welcome to FarmDirect</h1>
+        </header>
+        
+        <div class="welcome-features">
+            <div class="welcome-feature-card">
+                <div class="feature-icon">🤝</div>
+                <h3>Direct Connections</h3>
+                <p>Skip the middlemen and deal directly with producers for better margins and fair pricing.</p>
+            </div>
+            <div class="welcome-feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Clear Details</h3>
+                <p>Know exactly what you are getting with transparent produce types, quantities, and qualities.</p>
+            </div>
+            <div class="welcome-feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Simple Ordering</h3>
+                <p>Find matches instantly and place orders in seconds without complicated logistics.</p>
+            </div>
+        </div>
+
+        <div class="down-arrow-container">
+            <a href="{{ url_for('index') }}" class="down-arrow" title="Enter FarmDirect AI">⬇️</a>
+        </div>
+    </div>
+</body>
+</html>

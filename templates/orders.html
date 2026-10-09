@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Shipment Summaries</h2>
+    <p>Order progress and logistics estimates for the current demo.</p>
+</div>
+
+{% if orders %}
+    <div class="shipment-grid">
+        {% for o in orders %}
+            {% set current_index = simulated_statuses.index(o.status) if o.status in simulated_statuses else 0 %}
+            <article class="card shipment-card">
+                <div class="shipment-heading">
+                    <div>
+                        <p class="shipment-eyebrow">Shipment summary</p>
+                        <h3>Order #{{ o.id }} · {{ o.produce_type }}</h3>
+                    </div>
+                    <span class="status-badge">{{ o.status }}</span>
+                </div>
+
+                <dl class="shipment-details">
+                    <div><dt>Buyer</dt><dd>{{ o.buyer_name }}</dd></div>
+                    <div><dt>Farmer</dt><dd>{{ o.farmer_name }}</dd></div>
+                    <div><dt>Produce</dt><dd>{{ o.produce_type }}</dd></div>
+                    <div><dt>Quantity</dt><dd>{{ o.quantity }} kg</dd></div>
+                    <div><dt>Farmer location</dt><dd>{{ o.farmer_location }}</dd></div>
+                    <div><dt>Buyer location</dt><dd>{{ o.buyer_location }}</dd></div>
+                    <div>
+                        <dt>Simulated demo distance</dt>
+                        <dd>{{ logistics[o.id].distance }}</dd>
+                    </div>
+                    <div>
+                        <dt>Simulated delivery window</dt>
+                        <dd>{{ logistics[o.id].delivery_window }}</dd>
+                    </div>
+                </dl>
+                <p class="shipment-estimate-note">{{ logistics[o.id].note }} No real route calculation or transport booking.</p>
+
+                <div class="shipment-tracking">
+                    <p class="shipment-eyebrow">Simulated status tracking</p>
+                    <ol class="shipment-flow">
+                        {% for status in simulated_statuses %}
+                            <li class="shipment-step{% if loop.index0 < current_index %} is-complete{% elif loop.index0 == current_index %} is-current{% endif %}">
+                                <span class="shipment-step-dot" aria-hidden="true"></span>
+                                <span>{{ status }}</span>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+
+                {% if current_index < simulated_statuses|length - 1 %}
+                    <form class="shipment-actions" action="{{ url_for('advance_order_status', order_id=o.id) }}" method="POST">
+                        <button type="submit" class="btn btn-primary">Advance to {{ simulated_statuses[current_index + 1] }}</button>
+                        <span>Demo status only. No transport is booked.</span>
+                    </form>
+                {% else %}
+                    <p class="shipment-delivered-note">This order has reached the final demo status.</p>
+                {% endif %}
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card empty-state-card">
+        <h3>No orders yet</h3>
+        <p>Orders placed from the marketplace will appear here with simulated shipment details.</p>
+        <a class="btn btn-primary" href="{{ url_for('marketplace') }}">Browse Marketplace</a>
+    </div>
+{% endif %}
+{% endblock %}

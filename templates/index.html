@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-center">
+    <div class="hero-content">
+        <h1 class="hero-title">Fresh from the Farm.<br><span class="text-primary">Direct to You.</span></h1>
+        <p class="hero-subtitle">Connecting farmers directly with buyers for grains and pulses.</p>
+        <div class="hero-actions">
+            <a href="{{ url_for('farmer') }}" class="btn btn-primary btn-lg">I'm a Farmer</a>
+            <a href="{{ url_for('marketplace') }}" class="btn btn-outline-primary btn-lg">Explore Marketplace</a>
+        </div>
+    </div>
+    
+    <!-- CSS Illustration of Farm-to-Market -->
+    <div class="hero-illustration">
+        <div class="illustration-box farmer-box">
+            <div class="emoji-icon">🧑‍🌾</div>
+            <div class="box-label">Farmer</div>
+            <div class="box-sublabel">Lists Produce</div>
+        </div>
+        <div class="illustration-arrow">➔</div>
+        <div class="illustration-box platform-box">
+            <div class="emoji-icon">🌾</div>
+            <div class="box-label">FarmDirect</div>
+            <div class="box-sublabel">Finds Match</div>
+        </div>
+        <div class="illustration-arrow">➔</div>
+        <div class="illustration-box buyer-box">
+            <div class="emoji-icon">🏢</div>
+            <div class="box-label">Buyer</div>
+            <div class="box-sublabel">Places Order</div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Featured Marketplace -->
+<div class="featured-marketplace mt-5 mb-5">
+    <div class="featured-header text-center mb-4">
+        <h2 class="text-dark-green">Featured Produce</h2>
+        <p>A sneak peek of what's available right now.</p>
+    </div>
+    
+    <div class="marketplace-grid">
+        {% if produces %}
+            {% for p in produces %}
+                <div class="card produce-card">
+                    <div class="produce-header">
+                        <h3>{{ p.produce_type }}</h3>
+                        <span class="badge">{{ p.quality }}</span>
+                    </div>
+                    <div class="produce-details mt-2">
+                        <p><strong>Available:</strong> {{ p.quantity }} kg</p>
+                        <p><strong>Location:</strong> {{ p.location }}</p>
+                        <p><strong>Farmer:</strong> {{ p.farmer_name }}</p>
+                        {% if p.price %}
+                            <p class="price-tag mt-2">₹{{ p.price }} / kg</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="card w-100 text-center">
+                <p>No featured produce currently available.</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('marketplace') }}" class="btn btn-secondary">View All in Marketplace</a>
+    </div>
+</div>
+{% endblock %}
